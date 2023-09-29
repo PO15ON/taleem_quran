@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:taleem_quran/live.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,15 +19,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      textDirection: TextDirection.rtl,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: Home(),
-      routes: {
-        'LiveStream': (context) => LiveStream(),
-      },
     );
   }
 }
@@ -81,17 +79,22 @@ class _HomeState extends State<Home> {
       key: widget._scaffoldKey,
       body: Stack(
         children: [
-          Image.asset(
-            'assets/bg4.jpg',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              Colors.black.withOpacity(
+                  0.4), // Adjust opacity by changing the value (0.5 for 50% opacity)
+              BlendMode.darken,
+            ),
+            child: Image.asset(
+              'assets/bg4.jpg',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+            ),
           ),
           Center(
             child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-              ),
+              padding: EdgeInsets.only(top: 150),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -109,7 +112,7 @@ class _HomeState extends State<Home> {
                       children: [
                         _buildLinkButton(
                           'ژوندي نشرات',
-                          () => Navigator.pushNamed(context, 'LiveStream'),
+                          () => Get.to(() => LiveStream()),
                         ),
                         _buildLinkButton(
                           'ویب سایټ',
@@ -161,50 +164,55 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildLinkButton(String text, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(12),
-        margin: EdgeInsets.only(bottom: 10),
-        decoration: BoxDecoration(
-          color: Color(0xFF4C35AE),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: InkWell(
+            onTap: onTap,
+            child: Container(
+              padding: EdgeInsets.all(12),
+              margin: EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Color(0xFF4C35AE),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ),
-          textAlign: TextAlign.center,
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildModal(String modalType, bool isVisible, VoidCallback onClose) {
     if (isVisible) {
-      return GestureDetector(
-        onTap: onClose,
-        child: Container(
-          color: Colors.black.withOpacity(0.5),
-          child: Center(
-            child: Container(
-                margin: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
-                      offset: Offset(0, 2),
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: _modal(modalType, onClose)),
-          ),
+      return Container(
+        color: Colors.black.withOpacity(0.5),
+        child: Center(
+          child: Container(
+              margin: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.25),
+                    offset: Offset(0, 2),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              child: _modal(modalType, onClose)),
         ),
       );
     } else {

@@ -1,112 +1,80 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class TrackProgress extends StatelessWidget {
-  final Duration currentPosition;
-  final Duration totalDuration;
+import 'live_controller.dart';
 
-  TrackProgress({required this.currentPosition, required this.totalDuration});
-
-  String formatDuration(Duration duration) {
-    final mins = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final secs = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '$mins:$secs';
-  }
+class LiveStream extends StatelessWidget {
+  LiveStream({Key? key}) : super(key: key);
+  final controller = Get.put(LiveStreamState());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(width: 3.0, color: Color(0xFF4C35AE)),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            formatDuration(currentPosition),
-            style: const TextStyle(color: Colors.white),
-          ),
-          Text(
-            formatDuration(totalDuration),
-            style: const TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LiveStream extends GetView<LiveStreamState> {
-  @override
-  Widget build(BuildContext context) {
-    print("isReady: ${isPlayerReady.value}");
-    print("isPlaying: ${isPlaying.value}");
-    Obx(() => (!isPlayerReady.value)
-        ? Scaffold(
-            body: Image.asset(
-              'assets/bg5.jpeg',
-              fit: BoxFit.cover,
-            ),
-          )
-        : Container());
-    Obx(() => (isPlaying.value)
-        ? Scaffold(
-            body: Image.asset(
-              'assets/bg5.jpeg',
-              fit: BoxFit.cover,
-            ),
-          )
-        : Container());
-
-    return Obx(
-      () => Scaffold(
+    return MaterialApp(
+      home: Scaffold(
         body: Stack(
           children: [
-            Image.asset(
-              'assets/bg5.jpeg',
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                color: Color.fromRGBO(0, 0, 0, 0.5),
+            // Background Image with Opacity
+            ColorFiltered(
+              colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(
+                    0.2), // Adjust opacity by changing the value (0.5 for 50% opacity)
+                BlendMode.darken,
               ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Image.asset(
+              child: Image.asset(
+                'assets/bg5.jpeg',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+            ),
+
+            // Overlay Container with SafeArea
+            Container(
+              padding: EdgeInsets.only(top: 32, bottom: 256),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  // App Logo
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Image.asset(
                       'assets/white-logo.png',
                       width: 300.0,
                       height: 200.0,
                     ),
-                    Column(
-                      children: [
-                        TrackProgress(
-                          currentPosition: currentPosition.value,
-                          totalDuration: totalDuration.value,
+                  ),
+
+                  // Play/Pause Button
+                  Obx(
+                    () => Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 20.0),
+                        width: 100.0, // Adjust the width to make it circular
+                        height: 100.0, // Adjust the height to make it circular
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(
+                              0xFF4C35AE), // Background color for the circular button
                         ),
-                        Container(
-                          color: const Color(0xFF4C35AE),
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.all(8.0),
-                          child: IconButton(
-                            icon: Icon(
-                              isPlaying.value ? Icons.pause : Icons.play_arrow,
-                              size: 35.0,
-                            ),
-                            onPressed: handlePlayPress,
+                        child: IconButton(
+                          icon: Icon(
+                            controller.isPlaying.value
+                                ? Icons.pause
+                                : Icons.play_arrow,
+                            size: 48.0,
                             color: Colors.white,
                           ),
+                          onPressed: () {
+                            // Handle play button press
+                            handlePlayPress();
+                          },
                         ),
-                      ],
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -114,64 +82,12 @@ class LiveStream extends GetView<LiveStreamState> {
       ),
     );
   }
-}
 
-AudioPlayer audioPlayer = AudioPlayer();
-
-final isPlayerReady = false.obs;
-final isPlaying = false.obs;
-final totalDuration = const Duration().obs;
-final currentPosition = const Duration().obs;
-final connectivityResult = ConnectivityResult.none.obs;
-
-Future<void> handlePlayPress() async {
-  print("isPlaying: ${isPlaying.value}");
-  if (isPlaying.value) {
-    await audioPlayer.pause();
-    isPlaying.value = false;
-  } else {
-    await audioPlayer.play(UrlSource('http://radio.hewadict.com:8004'));
-    print("playing"); // Replace with your audio file path or URL
-    isPlaying.value = true;
-  }
-}
-
-class LiveStreamState extends GetxController {
-  @override
-  void onInit() {
-    super.onInit();
-    isPlayerReady.value = false;
-    isPlaying.value = false;
-    connectivityResult.value = ConnectivityResult.none;
-    totalDuration.value = const Duration();
-    currentPosition.value = const Duration();
-
-    initPlayer();
-    checkConnectivity();
-  }
-
-  Future<void> initPlayer() async {
-    print("init");
-    audioPlayer.onDurationChanged.listen((Duration duration) {
-      totalDuration.value = duration;
-    });
-
-    audioPlayer.onPositionChanged.listen((Duration position) {
-      currentPosition.value = position;
-    });
-
-    isPlayerReady.value = true;
-  }
-
-  Future<void> checkConnectivity() async {
-    final result = await Connectivity().checkConnectivity();
-    print("conn: ${result}");
-    connectivityResult.value = result;
-  }
-
-  @override
-  void dispose() {
-    audioPlayer.dispose();
-    super.dispose();
+  handlePlayPress() {
+    if (controller.audioPlayer.playing) {
+      controller.audioPlayer.pause();
+    } else {
+      controller.audioPlayer.play();
+    }
   }
 }
