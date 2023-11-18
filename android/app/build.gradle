@@ -40,6 +40,15 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    signingConfigs {
+        config {
+            keyAlias 'MushafKey'
+            keyPassword 'PsMh@328'
+            storeFile file('/media/ahmed/f64c69f8-b055-42c2-bf58-a513f88ca32a1/Android/Projects/MushafApplication/mushaf.jks')
+            storePassword 'Msh@!219'
+        }
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.hamadia.taleem_quran"
@@ -55,7 +64,7 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.config
         }
     }
 }

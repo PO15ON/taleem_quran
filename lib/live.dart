@@ -11,6 +11,12 @@ class LiveStream extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Get.close(1),
+            icon: Icon(Icons.arrow_back),
+          ),
+        ),
         body: Stack(
           children: [
             // Background Image with Opacity

@@ -93,47 +93,49 @@ class _HomeState extends State<Home> {
             ),
           ),
           Center(
-            child: Container(
-              padding: EdgeInsets.only(top: 150),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/white-logo.png',
-                    width: 300,
-                    height: 200,
-                    alignment: Alignment.center,
-                  ),
-                  SizedBox(height: 30),
-                  Container(
-                    width: 300,
-                    margin: EdgeInsets.only(bottom: 30),
-                    child: Column(
-                      children: [
-                        _buildLinkButton(
-                          'ژوندي نشرات',
-                          () => Get.to(() => LiveStream()),
-                        ),
-                        _buildLinkButton(
-                          'ویب سایټ',
-                          () => _launchURL('https://www.t-quran.com/'),
-                        ),
-                        _buildLinkButton('د تعلیم القرآن راډیو په اړه', () {
-                          _showModal('radio', true);
-                        }),
-                        _buildLinkButton('د حمادیې مدرسې په اړه', () {
-                          _showModal('madrasa', true);
-                        }),
-                        _buildLinkButton('د زده کړې برخه', () {
-                          _showModal('learning', true);
-                        }),
-                        _buildLinkButton('شریک یې کړئ!', () {
-                          _onShare();
-                        }),
-                      ],
+            child: SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.only(top: 150),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/white-logo.png',
+                      width: 300,
+                      height: 200,
+                      alignment: Alignment.center,
                     ),
-                  ),
-                ],
+                    SizedBox(height: 30),
+                    Container(
+                      width: 300,
+                      margin: EdgeInsets.only(bottom: 30),
+                      child: Column(
+                        children: [
+                          _buildLinkButton(
+                            'ژوندي نشرات',
+                            () => Get.to(() => LiveStream()),
+                          ),
+                          _buildLinkButton(
+                            'ویب سایټ',
+                            () => _launchURL('https://www.t-quran.com/'),
+                          ),
+                          _buildLinkButton('د تعلیم القرآن راډیو په اړه', () {
+                            _showModal('radio', true);
+                          }),
+                          _buildLinkButton('د حمادیې مدرسې په اړه', () {
+                            _showModal('madrasa', true);
+                          }),
+                          _buildLinkButton('د زده کړې برخه', () {
+                            _showModal('learning', true);
+                          }),
+                          _buildLinkButton('شریک یې کړئ!', () {
+                            _onShare();
+                          }),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
